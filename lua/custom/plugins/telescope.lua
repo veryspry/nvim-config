@@ -58,6 +58,7 @@ return {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
           },
+          fzf = {},
         },
       }
 
@@ -102,6 +103,14 @@ return {
       vim.keymap.set('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = '[S]earch [N]eovim files' })
+    end,
+  },
+  {
+    'nvim-telescope/telescope-frecency.nvim',
+    -- install the latest stable version
+    version = '*',
+    config = function()
+      require('telescope').load_extension 'frecency'
     end,
   },
 }
