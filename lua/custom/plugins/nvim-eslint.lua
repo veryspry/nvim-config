@@ -1,6 +1,6 @@
 return {
   {
-    'esmuellert/nvim-eslint',
+    ':smuellert/nvim-eslint',
     config = function()
       require('nvim-eslint').setup {}
     end,
