@@ -630,12 +630,13 @@ require('lazy').setup({
         intelephense = {
           cmd = { 'intelephense', '--stdio' },
           filetypes = { 'php' },
-          root_markers = { '.git', 'composer.json' },
+          root_markers = { '.git', 'composer.json', 'wp-config.php' },
           settings = {
             intelephense = {
               files = {
                 maxSize = 5000000, -- increase if needed
                 associations = { '*.php' },
+                followLinks = true,
                 exclude = {
                   '**/.git/**',
                   -- IMPORTANT: remove default excludes that hide plugin dirs
@@ -643,12 +644,26 @@ require('lazy').setup({
               },
             },
           },
+          root_dir = function(fname)
+            local util = require 'lspconfig.util'
+
+            -- detect the WordPress root (has wp-config.php)
+            local wp_root = util.root_pattern 'wp-config.php'(fname)
+            if wp_root then
+              return wp_root
+            end
+
+            -- return vim.fs.dirname(vim.fs.find('.git', { path = startPath, upward = true })[1]) or util.root_pattern '.'(fname)
+
+            -- fallback: nearest git repo
+            return util.find_git_ancestor(fname) or util.root_pattern '.'(fname)
+          end,
         },
 
         -- phpactor = {
         --   cmd = { 'phpactor', 'language-server' },
         --   filetypes = { 'php' },
-        --   root_dir = require('lspconfig').util.root_pattern('.git', '.phpactor.json', '.phpactor.yml'),
+        --   root_dir = require('lspconfig').util.root_pattern('.git', '.phpactor.json', '.phpactor.yml', 'wp-config.php'),
         --   init_options = {
         --     ['language_server_phpstan.enabled'] = true,
         --   },

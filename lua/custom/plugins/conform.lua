@@ -1,30 +1,3 @@
-local get_lsp_format_opt = function()
-  local bufnr = vim.fn.bufnr()
-  local disable_filetypes = {
-    c = true,
-    cpp = true,
-    typescript = true,
-    javascript = true,
-    typescriptreact = true,
-    javascriptreact = true,
-  }
-  local lsp_format_opt
-  if disable_filetypes[vim.bo[bufnr].filetype] then
-    lsp_format_opt = 'never'
-  else
-    lsp_format_opt = 'fallback'
-  end
-  return lsp_format_opt
-end
-
-local eslint_format = function()
-  if vim.fn.exists 'EslintFixAll' then
-    vim.cmd 'EslintFixAll'
-  end
-  -- return empty so conform api does not break
-  return {}
-end
-
 return {
 
   { -- Autoformat
@@ -36,8 +9,8 @@ return {
         '<leader>f',
         function()
           require('conform').format {
-            async = true,
-            lsp_format = get_lsp_format_opt(),
+            async = true, -- needed for phpcbf as it takes FOREVER to run and will otherwise timeout -- pass true to run formatter without blocking but edits in the buffer will cause formats to get discarded.
+            lsp_format = 'never',
           }
         end,
         mode = 'n',
@@ -45,30 +18,28 @@ return {
       },
     },
     opts = {
-      notify_on_error = false,
+      -- log_level = vim.log.levels.DEBUG,
+      notify_on_error = true,
       format_on_save = function(bufnr)
-        return {
-          timeout_ms = 500,
-          lsp_format = get_lsp_format_opt(),
-        }
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        -- local disable_filetypes = { c = true, cpp = true, php = true, ts = true, js = true, tsx = true, jsx = true }
+        local disable_filetypes = { c = true, cpp = true, php = true, ts = true, js = true, tsx = true, jsx = true }
 
-        -- if vim.api.nvim_buf_get_name(bufnr):match '%.ts$' then
-        --   return nil
-        -- elseif disable_filetypes[vim.bo[bufnr].filetype] then
-        --   return nil
-        -- else
-        --   return {
-        --     timeout_ms = 500,
-        --     lsp_format = 'fallback',
-        --   }
-        -- end
+        if vim.api.nvim_buf_get_name(bufnr):match '%.ts$' then
+          return nil
+        elseif disable_filetypes[vim.bo[bufnr].filetype] then
+          return nil
+        else
+          return {
+            timeout_ms = 500,
+            lsp_format = 'fallback',
+          }
+        end
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        php = { 'phpcbf' },
         -- typescript = eslint_format,
         -- typescriptreact = eslint_format,
         -- javascript = eslint_format,
@@ -79,6 +50,35 @@ return {
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
+      },
+      formatters = {
+        phpcbf = {
+          command = function(self, ctx)
+            local root = vim.fs.root(ctx.dirname, { '.git' })
+
+            -- Use the closest vendored phpcbf if it exists
+            if root ~= nil then
+              local path = vim.fs.joinpath(root, 'vendor', 'bin', 'phpcbf')
+              local stat = vim.uv.fs_stat(path)
+              if stat and stat.type == 'file' then
+                return path
+              end
+            end
+            return 'phpcbf'
+          end,
+          -- args = { '--standard=.', '-' }, -- "." tells phpcbf to search upward
+          stdin = true,
+          cwd = function(self, ctx)
+            -- local root = vim.fs.root(ctx.dirname, { '.phpcs.xml', 'phpcs.xml', '.phpcs.xml.dist', 'phpcs.xml.dist' })
+            local root = vim.fs.root(ctx.dirname, { '.git' })
+            -- use the closest phpcs config file if it exists
+            if root ~= nil then
+              return root
+            end
+
+            return ctx.dirname
+          end,
+        },
       },
     },
   },
