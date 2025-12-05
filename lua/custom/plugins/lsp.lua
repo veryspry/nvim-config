@@ -237,20 +237,28 @@ return {
               },
             },
           },
-
           intelephense = {
             cmd = { 'intelephense', '--stdio' },
             filetypes = { 'php' },
-            root_markers = { '.git', 'composer.json', 'wp-config.php' },
+            root_markers = { 'wp-config.php', '.git', 'composer.json' },
+            -- workspace_required = true,
             settings = {
               intelephense = {
                 files = {
-                  maxSize = 5000000, -- increase if needed
+                  maxsize = 5000000, -- increase if needed
                   associations = { '*.php' },
-                  followLinks = true,
+                  followlinks = true,
                   exclude = {
                     '**/.git/**',
-                    -- IMPORTANT: remove default excludes that hide plugin dirs
+                    '**/node_modules/**',
+                    '**/vendor/**/tests/**',
+                    '**/vendor/**/test/**',
+                    -- important: remove default excludes that hide plugin dirs
+                  },
+                },
+                environment = {
+                  includePaths = {
+                    '/Users/matt/Local Sites/gwiz/app/public',
                   },
                 },
               },
@@ -258,26 +266,59 @@ return {
             root_dir = function(fname)
               local util = require 'lspconfig.util'
 
-              -- detect the WordPress root (has wp-config.php)
-              -- local wp_root = vim.fs.root(fname, { 'wp-config.php' })
-
+              -- first, try to find wordpress root by looking for wp-config.php
+              -- this will traverse upward from the current file
               local wp_root = util.root_pattern 'wp-config.php'(fname)
-              vim.inspect('WP ROOT:' + wp_root)
               if wp_root then
                 return wp_root
               end
 
-              -- return vim.fs.dirname(vim.fs.find('.git', { path = startPath, upward = true })[1]) or util.root_pattern '.'(fname)
+              -- fallback: look for composer.json (common in wordpress projects)
+              local composer_root = util.root_pattern 'composer.json'(fname)
+              if composer_root then
+                return composer_root
+              end
 
-              -- fallback: nearest git repo
-              return util.find_git_ancestor(fname) or util.root_pattern '.'(fname)
+              -- fallback: nearest git repository
+              local git_root = util.find_git_ancestor(fname)
+              if git_root then
+                return git_root
+              end
+
+              -- final fallback: use current directory
+              return util.root_pattern '.'(fname)
             end,
           },
 
           -- phpactor = {
           --   cmd = { 'phpactor', 'language-server' },
           --   filetypes = { 'php' },
-          --   root_dir = require('lspconfig').util.root_pattern('.git', '.phpactor.json', '.phpactor.yml', 'wp-config.php'),
+          --   -- root_dir = require('lspconfig').util.root_pattern('.git', '.phpactor.json', '.phpactor.yml', 'wp-config.php'),
+          --   root_dir = function(fname)
+          --     local util = require 'lspconfig.util'
+          --
+          --     -- first, try to find wordpress root by looking for wp-config.php
+          --     -- this will traverse upward from the current file
+          --     local wp_root = util.root_pattern 'wp-config.php'(fname)
+          --     if wp_root then
+          --       return wp_root
+          --     end
+          --
+          --     -- fallback: look for composer.json (common in wordpress projects)
+          --     local composer_root = util.root_pattern 'composer.json'(fname)
+          --     if composer_root then
+          --       return composer_root
+          --     end
+          --
+          --     -- fallback: nearest git repository
+          --     local git_root = util.find_git_ancestor(fname)
+          --     if git_root then
+          --       return git_root
+          --     end
+          --
+          --     -- final fallback: use current directory
+          --     return util.root_pattern '.'(fname)
+          --   end,
           --   init_options = {
           --     ['language_server_phpstan.enabled'] = true,
           --   },
@@ -313,7 +354,10 @@ return {
               -- by the server configuration above. Useful when disabling
               -- certain features of an LSP (for example, turning off formatting for ts_ls)
               server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+
               require('lspconfig')[server_name].setup(server)
+              -- vim.lsp.config[server_name] = server
+              -- vim.lsp.enable(server_name)
             end,
           },
         }
