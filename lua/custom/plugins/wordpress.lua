@@ -1,5 +1,0 @@
-return {
-  -- {
-  --   'bitpoke/wordpress.nvim',
-  -- },
-}
