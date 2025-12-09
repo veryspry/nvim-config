@@ -1,3 +1,17 @@
+local M = {}
+
+M.get_root_dir = function(dirname)
+  return vim.fs.root(dirname, { '.phpcs.xml', 'phpcs.xml', '.phpcs.xml.dist', 'phpcs.xml.dist', '.git' })
+end
+
+M.format_opts = function()
+  return {
+    -- async = true, -- needed for phpcbf as it takes FOREVER to run and will otherwise timeout -- pass true to run formatter without blocking but edits in the buffer will cause formats to get discarded.
+    timeout_ms = 3000,
+    lsp_format = 'never',
+  }
+end
+
 return {
   { -- Autoformat
     'stevearc/conform.nvim',
@@ -7,17 +21,14 @@ return {
       {
         '<leader>f',
         function()
-          require('conform').format {
-            async = true, -- needed for phpcbf as it takes FOREVER to run and will otherwise timeout -- pass true to run formatter without blocking but edits in the buffer will cause formats to get discarded.
-            lsp_format = 'never',
-          }
+          require('conform').format(M.format_opts())
         end,
         mode = 'n',
         desc = '[F]ormat buffer',
       },
     },
     opts = {
-      -- log_level = vim.log.levels.DEBUG,
+      log_level = vim.log.levels.DEBUG,
       notify_on_error = true,
       format_on_save = function(bufnr)
         -- Disable "format_on_save lsp_fallback" for languages that don't
@@ -30,10 +41,7 @@ return {
         elseif disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
-          return {
-            timeout_ms = 500,
-            lsp_format = 'fallback',
-          }
+          return M.format_opts()
         end
       end,
       formatters_by_ft = {
@@ -53,7 +61,10 @@ return {
       formatters = {
         phpcbf = {
           command = function(self, ctx)
-            local root = vim.fs.root(ctx.dirname, { '.git' })
+            -- local root = vim.fs.root(ctx.dirname, { '.git' })
+            -- vim.fs.root(ctx.dirname, { '.phpcs.xml', 'phpcs.xml', '.phpcs.xml.dist', 'phpcs.xml.dist', '.git' })
+
+            local root = M.get_root_dir(ctx.dirname)
 
             -- Use the closest vendored phpcbf if it exists
             if root ~= nil then
@@ -68,8 +79,9 @@ return {
           -- args = { '--standard=.', '-' }, -- "." tells phpcbf to search upward
           stdin = true,
           cwd = function(self, ctx)
-            -- local root = vim.fs.root(ctx.dirname, { '.phpcs.xml', 'phpcs.xml', '.phpcs.xml.dist', 'phpcs.xml.dist' })
-            local root = vim.fs.root(ctx.dirname, { '.git' })
+            -- local root = vim.fs.root(ctx.dirname, { '.phpcs.xml', 'phpcs.xml', '.phpcs.xml.dist', 'phpcs.xml.dist', '.git' })
+            local root = M.get_root_dir(ctx.dirname)
+            -- local root = vim.fs.root(ctx.dirname, { '.git' })
             -- use the closest phpcs config file if it exists
             if root ~= nil then
               return root

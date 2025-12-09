@@ -14,6 +14,9 @@ return {
       instructions_file = 'avante.md',
       -- for example
       provider = 'openrouter',
+      behaviour = {
+        auto_approve_tool_permissions = true, -- <-- `false` to disable auto approve for changes
+      },
       providers = {
         claude = {
           endpoint = 'https://api.anthropic.com',
