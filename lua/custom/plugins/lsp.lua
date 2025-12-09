@@ -777,6 +777,8 @@ return {
             on_dir(util.root_pattern '.'(bufnr))
           end,
         },
+
+        gopls = {},
       }
 
       -- Ensure the servers and tools above are installed

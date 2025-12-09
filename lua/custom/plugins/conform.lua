@@ -1,14 +1,23 @@
 local M = {}
 
+M.disable_filetypes = { c = true, cpp = true, php = true, ts = true, js = true, tsx = true, jsx = true }
+
 M.get_root_dir = function(dirname)
   return vim.fs.root(dirname, { '.phpcs.xml', 'phpcs.xml', '.phpcs.xml.dist', 'phpcs.xml.dist', '.git' })
 end
 
 M.format_opts = function()
+  local lsp_format = 'fallback'
+
+  local filetype = vim.bo.filetype
+  if M.disable_filetypes[filetype] then
+    lsp_format = 'never'
+  end
+
   return {
     -- async = true, -- needed for phpcbf as it takes FOREVER to run and will otherwise timeout -- pass true to run formatter without blocking but edits in the buffer will cause formats to get discarded.
     timeout_ms = 3000,
-    lsp_format = 'never',
+    lsp_format = lsp_format,
   }
 end
 
@@ -34,11 +43,10 @@ return {
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true, php = true, ts = true, js = true, tsx = true, jsx = true }
 
         if vim.api.nvim_buf_get_name(bufnr):match '%.ts$' then
           return nil
-        elseif disable_filetypes[vim.bo[bufnr].filetype] then
+        elseif M.disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
           return M.format_opts()
