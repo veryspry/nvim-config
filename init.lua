@@ -201,6 +201,24 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 
 vim.keymap.set('i', 'jk', '<Esc>', { noremap = true })
 
+-- Create a new tab
+vim.keymap.set('n', '<leader>ts', ':tab split<CR>', { desc = '[T]ab [S]plit' })
+
+-- Create a new tab from a split
+vim.keymap.set('n', '<leader>tn', ':tab new<CR>', { desc = '[N]ew [T]ab [E]mpty' })
+
+-- Keymaps for yanking File Metadata
+-- WIP: need to finish
+-- vim.keymap.set('n', 'ymp', function()
+--   local reg = vim.v.register -- detects "+", "a", "", etc.
+--   vim.fn.setreg(reg, vim.fn.expand '%:p')
+-- end, { desc = '[Y]ank file [M]etadata [P]ath' })
+-- vim.keymap.set('n', 'ymp', function()
+-- local reg = vim.v.register
+--   local reg = vim.v.register -- detects "+", "a", "", etc.
+--   vim.fn.setreg(reg, vim.fn.expand('%'))
+-- end, { desc = '[Y]ank file [M]etadata [P]ath' })
+
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
 -- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
