@@ -1,4 +1,5 @@
 -- LSP Plugins
+--
 
 return {
   {
@@ -280,7 +281,7 @@ return {
               return
             end
 
-            local git_root = util.find_git_ancestor(bufnr)
+            local git_root = vim.fs.dirname(vim.fs.find('.git', { upward = true })[1])
             if git_root then
               on_dir(git_root)
               return
