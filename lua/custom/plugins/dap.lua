@@ -64,22 +64,6 @@ return {
         },
       }
 
-      vim.keymap.set('n', '<space>b', dap.toggle_breakpoint)
-      vim.keymap.set('n', '<space>gb', dap.run_to_cursor)
-
-      -- Eval var under cursor
-      vim.keymap.set('n', '<space>?', function()
-        require('dapui').eval(nil, { enter = true })
-      end)
-
-      vim.keymap.set('n', '<leader>dc', dap.continue, { desc = '[D]ebug [C]ontinue' })
-      vim.keymap.set('n', '<F2>', dap.step_into)
-      vim.keymap.set('n', '<F3>', dap.step_over)
-      vim.keymap.set('n', '<F4>', dap.step_out)
-      vim.keymap.set('n', '<F5>', dap.step_back)
-      vim.keymap.set('n', '<leader>dr', dap.restart, { desc = '[D]ebug [R]estart' })
-      vim.keymap.set('n', '<leader>dt', dap.terminate, { desc = '[D]ebug [R]estart' })
-
       dap.listeners.before.attach.dapui_config = function()
         ui.open()
       end
@@ -92,6 +76,22 @@ return {
       dap.listeners.before.event_exited.dapui_config = function()
         ui.close()
       end
+
+      vim.keymap.set('n', '<space>b', dap.toggle_breakpoint)
+      vim.keymap.set('n', '<space>gb', dap.run_to_cursor)
+
+      -- Eval var under cursor
+      vim.keymap.set('n', '<space>?', function()
+        require('dapui').eval(nil, { enter = true })
+      end)
+
+      vim.keymap.set('n', '<leader>dc', dap.continue, { desc = '[D]ebug [C]ontinue' })
+      vim.keymap.set('n', '<C><F2>', dap.step_into)
+      vim.keymap.set('n', '<C><F3>', dap.step_over)
+      vim.keymap.set('n', '<C><F4>', dap.step_out)
+      vim.keymap.set('n', '<C><F5>', dap.step_back)
+      vim.keymap.set('n', '<leader>dr', dap.restart, { desc = '[D]ebug [R]estart' })
+      vim.keymap.set('n', '<leader>dt', dap.terminate, { desc = '[D]ebug [T]erminate' })
     end,
   },
 }
