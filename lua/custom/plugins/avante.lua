@@ -11,9 +11,9 @@ return {
     opts = {
       -- add any opts here
       -- this file can contain specific instructions for your project
-      instructions_file = 'avante.md',
+      instructions_file = 'a.md',
       -- for example
-      provider = 'openrouter',
+      provider = 'openrouter_claude_opus_4_5',
       behaviour = {
         auto_approve_tool_permissions = true, -- <-- `false` to disable auto approve for changes
       },
@@ -36,7 +36,7 @@ return {
             max_tokens = 32768,
           },
         },
-        openrouter = {
+        openrouter_claude_sonnet_4_5 = {
           __inherited_from = 'openai',
           endpoint = 'https://openrouter.ai/api/v1/',
           api_key_name = 'OPENROUTER_API_KEY',
@@ -45,6 +45,17 @@ return {
           extra_request_body = {
             -- temperature = 0.75,
             max_tokens = 32768,
+          },
+        },
+        openrouter_claude_opus_4_5 = {
+          __inherited_from = 'openai',
+          endpoint = 'https://openrouter.ai/api/v1/',
+          api_key_name = 'OPENROUTER_API_KEY',
+          model = 'anthropic/claude-opus-4.5',
+          timeout = 30000, -- Timeout in milliseconds
+          extra_request_body = {
+            -- temperature = 0.75,
+            -- max_tokens = 25185,
           },
         },
       },
