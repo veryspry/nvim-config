@@ -76,6 +76,13 @@ return {
       end,
       desc = 'Debug: See last session result.',
     },
+    {
+      '<leader>dh',
+      function()
+        require('dap.ui.widgets').hover()
+      end,
+      desc = '[D]AP [H]over',
+    },
   },
   config = function()
     local dap = require 'dap'
@@ -131,6 +138,24 @@ return {
     --   local hl = (type == 'Stopped') and 'DapStop' or 'DapBreak'
     --   vim.fn.sign_define(tp, { text = icon, texthl = hl, numhl = hl })
     -- end
+    --
+
+    dap.adapters.php = {
+      type = 'executable',
+      command = 'node',
+      args = { os.getenv 'HOME' .. '/code/vscode-php-debug/out/phpDebug.js' },
+    }
+
+    dap.configurations.php = {
+      {
+        type = 'php',
+        request = 'launch',
+        name = 'Listen for Xdebug',
+        port = 9000,
+        log = true,
+        -- localSourceRoot = os.getenv 'HOME' .. '/Users/Local Sites/',
+      },
+    }
 
     dap.listeners.after.event_initialized['dapui_config'] = dapui.open
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
