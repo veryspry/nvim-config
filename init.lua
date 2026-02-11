@@ -207,6 +207,10 @@ vim.keymap.set('n', '<leader>ts', ':tab split<CR>', { desc = '[T]ab [S]plit' })
 -- Create a new tab from a split
 vim.keymap.set('n', '<leader>tn', ':tab new<CR>', { desc = '[N]ew [T]ab [E]mpty' })
 
+vim.keymap.set('n', '<Leader>e', function()
+  vim.diagnostic.open_float(nil, { focus = true })
+end, { desc = 'Show full diagnostic' })
+
 -- Keymaps for yanking File Metadata
 -- WIP: need to finish
 -- vim.keymap.set('n', 'ymp', function()
