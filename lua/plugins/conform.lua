@@ -77,9 +77,7 @@ return {
         lua = { 'stylua' },
         php = { 'phpcbf' },
         c = { 'clang_format' },
-        formatters_by_ft = {
-          markdown = { 'prettier', 'markdownlint-cli2' },
-        },
+        markdown = { 'prettier', 'markdownlint' },
         -- typescript = eslint_format,
         -- typescriptreact = eslint_format,
         -- javascript = eslint_format,
