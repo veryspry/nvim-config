@@ -7,7 +7,18 @@ return {
       local lint = require 'lint'
       lint.linters_by_ft = {
         markdown = { 'markdownlint' },
+        javascript = { 'eslint_d' },
+        typescript = { 'eslint_d' },
+        javascriptreact = { 'eslint_d' },
+        typescriptreact = { 'eslint_d' },
       }
+
+      -- local util = require 'lspconfig.util'
+
+      -- local eslint_root = util.root_pattern('.eslintrc', '.eslintrc.js', '.eslintrc.cjs', '.eslintrc.json', 'eslint.config.js', 'package.json')
+      -- lint.linters.eslint_d.cwd = function(params)
+      --   return eslint_root(params.bufname)
+      -- end
 
       -- To allow other plugins to add linters to require('lint').linters_by_ft,
       -- instead set linters_by_ft like this:

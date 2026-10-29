@@ -246,7 +246,7 @@ return {
           settings = {
             intelephense = {
               files = {
-                maxsize = 5000000, -- increase if needed
+                maxSize = 6000000, -- increase if needed
                 associations = { '*.php' },
                 followlinks = true,
                 exclude = {
@@ -311,6 +311,8 @@ return {
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'prettier',
+        'markdownlint-cli2',
       })
 
       for server, conf in pairs(servers) do

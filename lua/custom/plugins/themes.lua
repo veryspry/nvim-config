@@ -21,4 +21,5 @@ return {
     end,
   },
   { 'EdenEast/nightfox.nvim' },
+  { 'nyoom-engineering/oxocarbon.nvim' },
 }

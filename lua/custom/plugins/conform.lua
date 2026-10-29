@@ -76,6 +76,10 @@ return {
       formatters_by_ft = {
         lua = { 'stylua' },
         php = { 'phpcbf' },
+        c = { 'clang_format' },
+        formatters_by_ft = {
+          markdown = { 'prettier', 'markdownlint-cli2' },
+        },
         -- typescript = eslint_format,
         -- typescriptreact = eslint_format,
         -- javascript = eslint_format,
@@ -118,6 +122,9 @@ return {
 
             return ctx.dirname
           end,
+        },
+        prettier = {
+          prepend_args = { '--prose-wrap', 'always', '--print-width', '80' },
         },
       },
     },
